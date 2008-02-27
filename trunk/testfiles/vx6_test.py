@@ -31,11 +31,43 @@ import serial
 #   65 x3, 195, 65 x8, 195, 65 x15, 520, 65 x3, 130, 65 x3, 130, 65 x4, 780
 #   65 x5, 325, 65 x7, 260, 65 x8, 260, 52?
 
-def ByteToHex( byteStr ):    """    Convert a byte string to it's hex string representation e.g. for output.
-    posted by Simon Peverett to <http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/510399>    """        # Uses list comprehension which is a fractionally faster implementation than    # the alternative, more readable, implementation below    #       #    hex = []    #    for aChar in byteStr:    #        hex.append( "%02X " % ord( aChar ) )    #    #    return ''.join( hex ).strip()            return ''.join( [ "%02X " % ord( x ) for x in byteStr ] ).strip()
+def ByteToHex( byteStr ):
+    """
+    Convert a byte string to it's hex string representation e.g. for output.
+    posted by Simon Peverett to <http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/510399>
+    """
+    
+    # Uses list comprehension which is a fractionally faster implementation than
+    # the alternative, more readable, implementation below
+    #   
+    #    hex = []
+    #    for aChar in byteStr:
+    #        hex.append( "%02X " % ord( aChar ) )
+    #
+    #    return ''.join( hex ).strip()        
 
-def HexToByte( hexStr ):    """    Convert a string hex byte values into a byte string. The Hex Byte values may    or may not be space separated.
-    posted by Simon Peverett to <http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/510399>    """    # The list comprehension implementation is fractionally slower in this case        #    #    hexStr = ''.join( hexStr.split(" ") )    #    return ''.join( ["%c" % chr( int ( hexStr[i:i+2],16 ) ) \    #                                   for i in range(0, len( hexStr ), 2) ] )     bytes = []    hexStr = ''.join( hexStr.split(" ") )    for i in range(0, len(hexStr), 2):        bytes.append( chr( int (hexStr[i:i+2], 16 ) ) )    return ''.join( bytes )
+    return ''.join( [ "%02X " % ord( x ) for x in byteStr ] ).strip()
+
+def HexToByte( hexStr ):
+    """
+    Convert a string hex byte values into a byte string. The Hex Byte values may
+    or may not be space separated.
+    posted by Simon Peverett to <http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/510399>
+    """
+    # The list comprehension implementation is fractionally slower in this case    
+    #
+    #    hexStr = ''.join( hexStr.split(" ") )
+    #    return ''.join( ["%c" % chr( int ( hexStr[i:i+2],16 ) ) \
+    #                                   for i in range(0, len( hexStr ), 2) ] )
+ 
+    bytes = []
+
+    hexStr = ''.join( hexStr.split(" ") )
+
+    for i in range(0, len(hexStr), 2):
+        bytes.append( chr( int (hexStr[i:i+2], 16 ) ) )
+
+    return ''.join( bytes )
     
 
 def checksum(bytes):
@@ -62,7 +94,10 @@ def checksum_ok(s):
     
 
 ACK = chr(6)
-HEADER = HexToByte("41 48 30 32 31 00 E0 01 02 01")
+HEADER = HexToByte("00 0A 01 02 06 09 24 F8 01 00")
+# header for vx7r HEADER = HexToByte("00 0A 01 02 06 09 24 F8 01 00")
+# orginal for vx6r HEADER = HexToByte("41 48 30 32 31 00 E0 01 02 01")
+
 EOD = HexToByte("C9 FF")
 h1len  = 10
 blen   = 32575
@@ -70,7 +105,11 @@ b_read = blen / 25
 ofname = "out.vx6"
 iport  = "/dev/ttyUSB0"
 
-try:    s = serial.Serial(iport,19200)except serial.SerialException:    print "Error opening serial port.  Is it in use?"    sys.exit(1)
+try:
+    s = serial.Serial(iport,19200)
+except serial.SerialException:
+    print "Error opening serial port.  Is it in use?"
+    sys.exit(1)
 
 print "Reading from ", s.portstr
 print 'Turn HT on by pressing "ON/OFF" while pressing "FW".'
