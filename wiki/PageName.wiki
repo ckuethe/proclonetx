@@ -1,4 +1,4 @@
-#summary One-sentence summary of this page.
+#summary first information doc stuff
 
 = Introduction =
 yaesu programming project
